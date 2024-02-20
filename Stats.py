@@ -216,6 +216,7 @@ def find_correlation_coefficient_relationship(data_A:list, data_B:list) -> float
     i = 0
     while i < n:
         sum_of_products_Xi_Yi += data_A_f[i] * data_B_f[i]
+        print(f'{data_A_f[i] * data_B_f[i]}')
         i += 1
     print(f'∑xᵢyᵢ : {sum_of_products_Xi_Yi}')
     # ∑xᵢ
@@ -368,20 +369,214 @@ def fit_linear_model(data_A_f:list[float], data_B_f:list[float]) -> None:
     plt.legend()
 
     plt.show()
+
+def find_regression_slope(data_A_f:list[float], data_B_f:list[float]) -> float:
+    '''
+    Slope Equation: B1 = (n(∑xy)-∑x∑y) / (n(∑x²) - (∑x)²)
+    '''
+    # check if datasets are equal
+    if data_A_f.__len__() != data_B_f.__len__():
+        print('the two data sets do not Match')
+        print(f'data set A : {data_A_f}')
+        print(f'data set B : {data_B_f}')
+        print('Please Re-Enter Datasets...')
+        data_A = input('DataSet_A (csv): ').split(',')
+        data_B = input('DataSet_B (csv):').split(',')
+        data_A_f = convert_values_to_float(data_A)
+        data_B_f = convert_values_to_float(data_B)
+
+    slope: float = 0
+
+    n = data_A_f.__len__()
+    print(f'Observations: {n}')
+
+    #∑x
+    sum_of_x: float = 0
+    for val in data_A_f:
+        sum_of_x += val
+    print(f'∑x : {sum_of_x}')
+
+    #∑y
+    sum_of_y: float = 0
+    for val in data_B_f:
+        sum_of_y += val
+    print(f'∑y : {sum_of_y}')
+
+    #∑xy
+    sum_of_x_y: float = 0
+    i:int = 0
+    while i < data_A_f.__len__():
+        sum_of_x_y +=  data_A_f[i] * data_B_f[i]
+        i += 1
+    print(f'∑xy : {sum_of_x_y}')
+    
+    #∑x²
+    sum_of_x_sqrd: float = 0
+    for val in data_A_f:
+        sum_of_x_sqrd += val * val
+    print(f'∑x² {sum_of_x_sqrd}')
+
+    #∑y²
+    sum_of_y_sqrd: float = 0
+    for val in data_B_f:
+        sum_of_y_sqrd += val * val
+    print(f'∑y² : {sum_of_y_sqrd}')
+
+    #slope
+    slope = ((n * sum_of_x_y) - (sum_of_x * sum_of_y)) / ((n * sum_of_x_sqrd) - (sum_of_x * sum_of_x))
+    print(f'slope : {slope}')
+
+    return slope
+
+def find_estimate_y_intercept(data_A_f:list[float], data_B_f:list[float]) -> float:
+    '''
+     estimate y intercept equation:  (1 / n) * (∑yᵢ - (b_1 * ∑xᵢ))
+    '''
+    y_intercept: float = 0
+
+    n: int = data_A_f.__len__()
+
+    #∑yᵢ
+    sum_of_y = 0
+    for val in data_A_f:
+        sum_of_y += val
+
+    #∑xᵢ
+    sum_of_x = 0
+    for val in data_B_f:
+        sum_of_x += val
+
+    #b_1
+    b_1 = find_regression_slope(data_A_f, data_B_f)
+
+    y_intercept = (1 / n) * (sum_of_y - (b_1 * sum_of_x))
+    print(f'y-intercept {y_intercept}')
+
+    return y_intercept
+    
+def find_y_intercept_given_slope(data_A_f:list[float], data_B_f:list[float], slope:float) -> float:
+
+    y_intercept : float = 0
+
+    n: int = data_A_f.__len__()
+    print(f'Observations {n}')
+
+    #∑yᵢ
+    sum_of_y = 0
+    for val in data_B_f:
+        sum_of_y += val
+    print(f'∑yᵢ {sum_of_y}')
+
+    #∑xᵢ
+    sum_of_x = 0
+    for val in data_A_f:
+        sum_of_x += val
+    print(f'∑xᵢ {sum_of_x}')
+
+    y_intercept = (1 / n) * (sum_of_y - (slope * sum_of_x))
+    print(f'y-intercept {y_intercept}')
+    
+    return y_intercept
+
+
+def find_coefficient_of_determination(data_A_f:list[float], data_B_f:list[float]) ->  float:
+    ''' Coeificient of Determination Computational Formula:
+        R² = ((n * ∑xᵢyᵢ) - (∑xᵢ∑yᵢ)) / sqrt(((n * ∑xᵢ²) - (∑xᵢ)²) * ((n * ∑yᵢ²) - (∑yᵢ)²))
+    '''
+    #R²
+    coeff_determination: float = 0
+
+    #n
+    n = data_A_f.__len__()
+
+    #∑xᵢ
+    sum_of_x: float = 0
+    for val in data_A_f:
+        sum_of_x += val
+    print(f'∑xᵢ : {sum_of_x}')
+
+    #∑xᵢ²
+    sum_of_x_sqrd: float = 0
+    for val in data_A_f:
+        sum_of_x_sqrd += val * val
+    print(f'∑xᵢ² : {sum_of_x_sqrd}')
+
+    #∑yᵢ
+    sum_of_y: float = 0
+    for val in data_B_f:
+        sum_of_y += val
+    print(f'∑yᵢ : {sum_of_y}')
+
+    #∑yᵢ²
+    sum_of_y_sqrd: float = 0
+    for val in data_B_f:
+        sum_of_y_sqrd += val * val
+    print(f'∑yᵢ² : {sum_of_y_sqrd}')
+
+    #∑xᵢyᵢ
+    sum_of_product_x_y: float = 0
+    i: int = 0
+    while i < data_A_f.__len__():
+        sum_of_product_x_y += data_A_f[i] * data_B_f[i]
+        i += 1
+    print(f'∑xᵢyᵢ: {sum_of_product_x_y}')
+
+    #R = ((n * ∑xᵢyᵢ) - (∑xᵢ∑yᵢ)) / sqrt(((n * ∑xᵢ²) - (∑xᵢ)²) * ((n * ∑yᵢ²) - (∑yᵢ)²))
+    coeff_determination =  ((n * sum_of_product_x_y) - (sum_of_x * sum_of_y)) / math.sqrt(((n * sum_of_x_sqrd) - (sum_of_x * sum_of_x)) * ((n * sum_of_y_sqrd) - (sum_of_y * sum_of_y)))
+
+    #R²
+    coeff_determination = coeff_determination * coeff_determination
+    print(f'coeffiecient of determination: {coeff_determination}')
+    return coeff_determination
+
+class class_range_obj:
+    def __init__(self, class_min_val:float, class_max_val:float) -> None:
+        self.class_min_val = class_min_val
+        self.class_max_val = class_max_val
+
+    def add_class_min(self, val:float):
+        self.class_min_val = val
+
+    def add_class_max(self, val:float):
+        self.class_max_val = val
     
 
+def find_class_freq(data_set:list[float]) -> int:
+    class_freq:int = 0
+    range_values:list[str] = input('Enter Class Range in the following format (min-max)(csv):').split('-')
+    min: float = float(range_values[0])
+    max: float = float(range_values[1])
 
-    
+    for val in data_set:
+        if val > min and val < max:
+            class_freq += 1
 
 
-    
+    print(f'class frequency : {class_freq}')
+    return class_freq
+
+#Helper Functions
+'''
+Retreive Dataset from file
+default file: data_set_a.txt
+'''
+def get_data_from_file(file_name: str) -> list[float]:
+    data_set:list[float] = []
+    with open(file_name, 'r') as file:
+        # Read entire content of file
+        content = file.read()
+        data_set:list[float] = convert_values_to_float(content.split('\n')) 
+        
+    print(data_set)
+        
+    return data_set
 
 
 # data_set_func_menu
 def data_set_funcs_menu(data_set):
     print()
     print()
-    tool_selection = input("Enter Desired Tool (type tool name) -- 'new_data_set','sort-ascending', 'mean', 'median', 'mode', 'population_variance', 'population_standard_deviation', 'sample_variance', 'sample_standard_deviation', 'range', 'convert_to_float', 'x-percentile', 'interquartile_range', 'percentile_of_val', 'correlation_coefficient_r', 'fit_linear_model' : ")
+    tool_selection = input("Enter Desired Tool (type tool name) -- 'new_data_set','get_data_from_file','sort-ascending', 'mean', 'median', 'mode', 'population_variance', 'population_standard_deviation', 'sample_variance', 'sample_standard_deviation', 'range', 'convert_to_float', 'x-percentile', 'interquartile_range', 'percentile_of_val', 'correlation_coefficient_r', 'fit_linear_model', 'find_regression_slope', 'find_estimate_y_intercept', 'find_y_intercept_given_slope', 'find_coefficient_of_determination', 'find_class_freq' : ")
     if(tool_selection != None):
         if tool_selection == 'sort-ascending':
             print("Sort Data Ascending Order")
@@ -449,6 +644,35 @@ def data_set_funcs_menu(data_set):
             print('Fit linear model for dataset X and dataset Y, where y is the prediction dataset and X is the independent variable dataset:')
             data_set_y = input('Enter Prediction DataSet (csv):').split(',')
             fit_linear_model(convert_values_to_float(data_set), convert_values_to_float(data_set_y))
+            data_set_funcs_menu(data_set)
+        if tool_selection == 'find_regression_slope':
+            print('Finding the regression slope for dataset.')
+            data_set_y = input('Enter Prediction DataSet (csv):').split(',')
+            find_regression_slope(convert_values_to_float(data_set), convert_values_to_float(data_set_y))
+            data_set_funcs_menu(data_set)
+        if tool_selection == 'find_estimate_y_intercept':
+            print('Finding the estimate Y intercept')
+            data_set_y = input('Enter the Prediction DataSet (csv):').split(',')
+            find_estimate_y_intercept(convert_values_to_float(data_set),convert_values_to_float(data_set_y))
+            data_set_funcs_menu(data_set)
+        if tool_selection == 'find_y_intercept_given_slope':
+            print('Finding the estimate Y intercept')
+            data_set_y = input('Enter the prediction Data Set (csv):').split(',')
+            slope: float = float(input('Enter Slope (float):'))
+            find_y_intercept_given_slope(convert_values_to_float(data_set), convert_values_to_float(data_set_y), slope)
+            data_set_funcs_menu(data_set)
+        if tool_selection == 'find_coefficient_of_determination':
+            print('Finding the Coefficient of Determination:')
+            data_set_y = input('Enter the prediction Data Set (csv):').split(',')
+            find_coefficient_of_determination(convert_values_to_float(data_set), convert_values_to_float(data_set_y))
+            data_set_funcs_menu(data_set)
+        if tool_selection == 'get_data_from_file':
+            print('Retrieving data from file')
+            data_set = get_data_from_file('data_set_A.txt')
+            data_set_funcs_menu(data_set)
+        if tool_selection == 'find_class_freq':
+            print('Finding Class Frequency:')
+            find_class_freq(data_set)
             data_set_funcs_menu(data_set)
 
 if __name__ == "__main__":
